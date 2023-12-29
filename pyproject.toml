@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "dryad"
+version = "0.1.0"
+description = ""
+authors = ["zweix123 <1979803044@qq.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

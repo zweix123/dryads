@@ -1,0 +1,17 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+    },
+    "mypy-type-checker.args": [
+        "--check-untyped-defs",
+        "--ignore-missing-imports"
+    ],
+    "isort.args": [
+        "--profile",
+        "black"
+    ],
+}
