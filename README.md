@@ -19,7 +19,7 @@
 
   我们再进一步，我们发现同是脚本语言，Python的表意能力要比Bash强得多，如果运维相关的操作有点复杂，用Python实现可能要比Bash实现容易的多。
 
-  或者说，如果我们有一系列的命令，比如独立的或者需要一起执行一批命令同时还需要能执行其中的部分，这样的情况也可以将其根据选项描述成树形结构
+  或者说，如果我们有一系列的命令，比如独立的或者需要一起执行一批命令同时还需要能执行其中的部分，这样的情况也可以将其根据选项描述成树形结构。
 
 ## Install
 
@@ -47,7 +47,7 @@ def create_rust():
 cmd_tree = {
     "echo": {
         "English": "echo Hello World",
-        "Chinese": "echo 我可以吞下玻璃而不收到伤害",
+        "Chinese": "echo 我可以吞下玻璃而不受到伤害",
         "Math": ["echo 42", "echo 3.14"],
     },
     "work": {
@@ -82,14 +82,14 @@ Dryad(cmd_tree)
     + 每个str作为一个shell脚本一起交给shellypx
       + 如果命令中包含`cd`，需要放在一个`str`字面量中
 
-+ `--help`: help option比不可少
++ `--help`: help option必不可少
   + 根help option：`python3 script.py`/`python3 script.py -h`/`python3 script.py --help`
     ```bash
     该脚本命令可分为两大类
       Shell Commands, help会输出命令本身
       Python Function, help会输出函数的__doc__
     echo English: echo Hello World
-    echo Chinese: echo 我可以吞下玻璃而不收到伤害
+    echo Chinese: echo 我可以吞下玻璃而不受到伤害
     echo Math: echo 42
               echo 3.14
     work DryadFlag.PrefixCmd: cd Project
@@ -112,7 +112,7 @@ Dryad(cmd_tree)
       Shell Commands, help会输出命令本身
       Python Function, help会输出函数的__doc__
     echo English: echo Hello World
-    echo Chinese: echo 我可以吞下玻璃而不收到伤害
+    echo Chinese: echo 我可以吞下玻璃而不受到伤害
     echo Math: echo 42
                echo 3.14
     ```
@@ -121,8 +121,8 @@ Dryad(cmd_tree)
   + 叶子节点：
     ```bash
     > python example.py echo Chinese
-    echo 我可以吞下玻璃而不收到伤害
-    我可以吞下玻璃而不收到伤害
+    echo 我可以吞下玻璃而不受到伤害
+    我可以吞下玻璃而不受到伤害
     ```
 
   + 中间节点：执行该节点子树中的所有叶子节点
@@ -131,8 +131,8 @@ Dryad(cmd_tree)
     echo Hello World
     Hello
     World
-    echo 我可以吞下玻璃而不收到伤害
-    我可以吞下玻璃而不收到伤害
+    echo 我可以吞下玻璃而不受到伤害
+    我可以吞下玻璃而不受到伤害
     echo 42
     42
     echo 3.14
@@ -140,7 +140,7 @@ Dryad(cmd_tree)
     ```
 
 + 标记
-  + `DryadFlag.Anchoring`: 作为叶子的值，表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./test/flag_anchring.py)
+  + `DryadFlag.Anchoring`: 作为叶子的值, 表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./test/flag_anchring.py)
   + `DryadFlag.AcceptArg`: 作为叶子的值, 表示该选项还接收一个可选参数, 并将参数放在变量DryadArg中, 例子在[AcceptArg](./test/flag_accept_arg_valid.py), 还有两个非法的例子, [AcceptArg Invalid](./test/flag_accept_arg_invalid1.py) | [AcceptArg Invalid](./test/flag_accept_arg_invalid2.py)
   + `DryadFlag.InVisible`: 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印, 例子在[InVisible](./test/flag_invisiable.py)
   + `DryadFlag.IgnoreErr`: 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止, 例子在[IgnoreErr](./test/flag_ignore_err.py)
