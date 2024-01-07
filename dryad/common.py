@@ -1,0 +1,24 @@
+import os
+import sys
+from enum import Enum, auto
+
+
+class DryadFlag(Enum):
+    Anchoring = auto()  # 作为叶子的值，表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始
+    AcceptArg = auto()  # 作为叶子的值, 表示该选项还接收一个可选参数, 并将参数放在变量DryadArg中
+    InVisible = auto()  # 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印
+    IgnoreErr = auto()  # 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止
+    PrefixCmd = auto()  # 作为某个节点的键, 其值对应的脚本为子树中所有脚本的前置脚本
+
+
+class DryadEnv:
+    SCRIPTPATH: str = ""  # in Dryad.init(), by reflection
+    CALLPATH: str = os.getcwd()
+    OSTYPE: str = sys.platform
+
+    @staticmethod
+    def println():
+        """Print Dryad environment variable."""
+        print("SCRIPTPATH", "=", DryadEnv.SCRIPTPATH)
+        print("CALLPATH  ", "=", DryadEnv.CALLPATH)
+        print("OSTYPE    ", "=", DryadEnv.OSTYPE)
