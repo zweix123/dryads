@@ -51,6 +51,13 @@ pip install git+https://github.com/zweix123/dryad.git@master
 ```
 则可以通过`./script.py`这种很接近命令的形式使用
 
+对比`make`和`just`，我们希望直接运行某命令，可以通过
+```bash
+python3 setup.py sdist bdist_wheel
+python3 -m pip install --force-reinstall dist/dryad-1.0.0-py3-none-any.whl
+```
+得到`dryad`命令，它会执行路径为`~/dryadfile`的使用该框架的正常脚本，来实现类似效果
+
 ## Use
 
 我们只需要描述好树形结构即可，即通过`dict`类型的变量，参数解析和执行交给框架，下面是一个简单的例子

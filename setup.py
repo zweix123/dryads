@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name="dryad",
@@ -8,6 +8,11 @@ setup(
     author="zweix123",
     author_email="1979803044@qq.com",
     url="https://github.com/zweix123/dryad",
-    packages=[],
+    packages=find_packages(),
     install_requires=[],
+    entry_points={
+        "console_scripts": [
+            "dryad = dryad.execute:main",
+        ],
+    },
 )

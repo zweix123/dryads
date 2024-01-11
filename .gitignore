@@ -1,5 +1,10 @@
-.venv/
-**/.mypy_cache/
+# poetry
+.venv/        
+# mypy
+.mypy_cache/
+# python bytecode
 **/__pycache__/
-
-**/*.tmp/
+# python build tools
+dist/
+build/
+*.egg-info/
