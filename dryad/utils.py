@@ -1,5 +1,5 @@
 import subprocess
-from typing import Any, Callable
+from typing import Any, Callable, Union, List
 
 from . import container as DryadContainer
 from .common import DryadEnv, DryadFlag
@@ -20,8 +20,8 @@ def run_shell_cmd(cmd: str) -> None:
 
 
 ErrStopCmd: str = ""  # need config
-PrefixCmds: list[str] = []
-DryadFlags: list[DryadFlag] = []
+PrefixCmds: List[str] = []
+DryadFlags: List[DryadFlag] = []
 
 
 if DryadEnv.OSTYPE == "win32":
@@ -32,7 +32,7 @@ else:
     assert False, DryadEnv.OSTYPE + " not supported."
 
 
-def flag_push(flag: DryadFlag, data: str | list[str] | None = None):
+def flag_push(flag: DryadFlag, data: Union[str, list, None] = None):
     if flag == DryadFlag.PrefixCmd:
         if type(data) is str:
             PrefixCmds.append(data)
@@ -54,7 +54,7 @@ def flag_push(flag: DryadFlag, data: str | list[str] | None = None):
         assert False
 
 
-def flag_pop(flag: DryadFlag, data: str | list | None = None):
+def flag_pop(flag: DryadFlag, data: Union[str, list, None] = None):
     assert type(flag) is DryadFlag
     if flag == DryadFlag.PrefixCmd:
         if type(data) is str:
@@ -163,12 +163,12 @@ def dryad_shift(text: str, dist: int, first: bool) -> str:
     return first_line + "\n" + right_shift(left_shift(text), dist)
 
 
-def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list[str]):
-    DryadTreeLeafNodeType = (
-        str | Callable | DryadFlag | list[str | Callable | DryadFlag]
-    )
+def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
+    DryadTreeLeafNodeType = Union[
+        str, Callable, DryadFlag, List[Union[str, Callable, DryadFlag]]
+    ]
 
-    def lead_node_to_doc(node_content: DryadTreeLeafNodeType) -> list[str]:
+    def lead_node_to_doc(node_content: DryadTreeLeafNodeType) -> list:
         if type(node_content) is str:
             return [left_shift(node_content.rstrip())]
         elif callable(node_content):
@@ -182,7 +182,7 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list[str]):
         else:
             assert False
 
-    def dfs_internal_node(node: dict | DryadTreeLeafNodeType, prefix_opts: list[str]):
+    def dfs_internal_node(node: Union[dict, DryadTreeLeafNodeType], prefix_opts: list):
         if type(node) is not dict:
             prefix_opt = " ".join(prefix_opts)
             prefix_len = len(prefix_opt + ": ")
@@ -220,13 +220,13 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list[str]):
     return func_gen
 
 
-def help_opt_cmd_tree_gen(cmd_tree: dict, prefix_cmds: list[str]) -> dict:
+def help_opt_cmd_tree_gen(cmd_tree: dict, prefix_cmds: list) -> dict:
     cmd_tree[("-h", "--help")] = help_opt_func_gen(cmd_tree, prefix_cmds)
     # help_opt_func_gen返回的是一个可调用的函数, 但是这里还没有调用, 只有在真正调用时才遍历树, 所以合法
     return cmd_tree
 
 
-def cmd_tree_match_opt(cmd_tree: dict, opt: str) -> Any | None:
+def cmd_tree_match_opt(cmd_tree: dict, opt: str) -> Union[Any, None]:
     for k, v in cmd_tree.items():
         if (type(k) is str and opt == k) or (type(k) is tuple and opt in k):
             return v

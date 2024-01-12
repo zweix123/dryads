@@ -1,7 +1,7 @@
 import inspect
 import os
 import sys
-from typing import Any, Callable
+from typing import Any, Callable, Union, List
 
 from . import container as DryadContainer
 from . import utils as DryadUtil
@@ -13,7 +13,7 @@ class Dryad:
         DryadEnv.SCRIPTPATH = os.path.dirname(inspect.stack()[1].filename)  # trick
 
         self.cmd_tree = cmd_tree
-        self.opts: list[str] = []
+        self.opts: List[str] = []
 
         self.check()
         self.config()
@@ -26,7 +26,7 @@ class Dryad:
         """
 
         def check_cmd_tree(
-            cmd_tree_node: dict | list | str | Callable | DryadFlag,
+            cmd_tree_node: Union[dict, list, str, Callable, DryadFlag],
         ) -> None:
             if type(cmd_tree_node) == dict:
                 # internal node
@@ -64,7 +64,7 @@ class Dryad:
         else:
             self.opt_dfs(self.opts, self.cmd_tree)
 
-    def dfs_run(self, cmds: dict | list | str | Callable):
+    def dfs_run(self, cmds: Union[dict, list, str, Callable]):
         if callable(cmds):
             cmds()
         elif type(cmds) is str:
@@ -80,7 +80,7 @@ class Dryad:
         else:
             assert False, cmds
 
-    def opt_dfs(self, opts: list[str], cmds: dict | Any, path: list[str] = []):
+    def opt_dfs(self, opts: list, cmds: Union[dict, Any], path: List[str] = []):
         if len(opts) == 0:
             # 通过这个入口执行说明没有AcceptArg, 但执行是递归的, 如果子树有AcceptArg呢?
             def check_subtree_not_accept_arg_flag(cmd_tree_node: dict):
@@ -112,7 +112,7 @@ class Dryad:
             self.dfs_run(cmds)
             return
 
-        def internal_match() -> dict | list | str | None:
+        def internal_match() -> Union[dict, list, str, None]:
             dummy = DryadUtil.cmd_tree_match_opt(cmds, opts[0])
             if dummy is not None:
                 return dummy
