@@ -1,41 +1,41 @@
-from dryad import Dryad, DryadContainer, DryadFlag, run_shell_cmd
+from dryads import Dryads, DryadsContainer, DryadsFlag, run_shell_cmd
 
 
 def create_python():
     """Create Python"""
-    run_shell_cmd(f"poetry new {DryadContainer.DryadArg}")
+    run_shell_cmd(f"poetry new {DryadsContainer.DryadsArg}")
 
 
 def create_rust():
     """Create Rust"""
-    run_shell_cmd(f"cargo new {DryadContainer.DryadArg}")
+    run_shell_cmd(f"cargo new {DryadsContainer.DryadsArg}")
 
 
 cmd_tree = {
     "echo": {
         "English": "echo Hello World",
-        "Chinese": "echo 我可以吞下玻璃而不收到伤害",
+        "Chinese": "echo 我可以吞下玻璃而不受到伤害",
         "Math": ["echo 42", "echo 3.14"],
     },
     "work": {
-        DryadFlag.PrefixCmd: ["cd Project"],
+        DryadsFlag.PrefixCmd: ["cd Project"],
         "build": "cd build && make -j`nproc`",
         "run": "./build/bin/work",
     },
     "create": {
         "python": [
-            DryadFlag.Anchoring,
-            DryadFlag.AcceptArg,
+            DryadsFlag.Anchoring,
+            DryadsFlag.AcceptArg,
             create_python,
         ],
         "rust": [
-            DryadFlag.Anchoring,
-            DryadFlag.AcceptArg,
+            DryadsFlag.Anchoring,
+            DryadsFlag.AcceptArg,
             create_rust,
         ],
     },
-    ("-d", "--dryad"): "echo Hello Dryad",
+    ("-ds", "--dryads"): "echo Hello Dryads",
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)

@@ -1,39 +1,39 @@
 import subprocess
 from typing import Any, Callable, Union, List
 
-from . import container as DryadContainer
-from .common import DryadEnv, DryadFlag
+from . import container as DryadsContainer
+from .common import DryadsEnv, DryadsFlag
 
 
 def run_shell_cmd(cmd: str) -> None:
     assert isinstance(
         cmd, str
-    ), f'[Dryad.DryadUtil::run_shell_cmd] cmd arg is "{cmd}", that is not a str var.'
-    if DryadEnv.OSTYPE == "win32":
+    ), f'[Dryads.DryadsUtil::run_shell_cmd] cmd arg is "{cmd}", that is not a str var.'
+    if DryadsEnv.OSTYPE == "win32":
         subprocess.run(["powershell", "-Command", cmd], check=True)
-    elif DryadEnv.OSTYPE == "linux" or DryadEnv.OSTYPE == "darwin":
+    elif DryadsEnv.OSTYPE == "linux" or DryadsEnv.OSTYPE == "darwin":
         subprocess.run(["bash", "-c", cmd], check=True)
     else:
         assert (
             False
-        ), f"[Dryad.DryadUtil::run_shell_cmd] The OS {DryadEnv.OSTYPE} is not supported."
+        ), f"[Dryads.DryadsUtil::run_shell_cmd] The OS {DryadsEnv.OSTYPE} is not supported."
 
 
 ErrStopCmd: str = ""  # need config
 PrefixCmds: List[str] = []
-DryadFlags: List[DryadFlag] = []
+DryadsFlags: List[DryadsFlag] = []
 
 
-if DryadEnv.OSTYPE == "win32":
+if DryadsEnv.OSTYPE == "win32":
     ErrStopCmd = '$ErrorActionPreference = "Stop"'
-elif DryadEnv.OSTYPE == "linux" or DryadEnv.OSTYPE == "darwin":
+elif DryadsEnv.OSTYPE == "linux" or DryadsEnv.OSTYPE == "darwin":
     ErrStopCmd = "set -e"
 else:
-    assert False, DryadEnv.OSTYPE + " not supported."
+    assert False, DryadsEnv.OSTYPE + " not supported."
 
 
-def flag_push(flag: DryadFlag, data: Union[str, list, None] = None):
-    if flag == DryadFlag.PrefixCmd:
+def flag_push(flag: DryadsFlag, data: Union[str, list, None] = None):
+    if flag == DryadsFlag.PrefixCmd:
         if type(data) is str:
             PrefixCmds.append(data)
         elif type(data) is list:
@@ -41,22 +41,22 @@ def flag_push(flag: DryadFlag, data: Union[str, list, None] = None):
         else:
             assert False
     elif (
-        flag == DryadFlag.InVisible
-        or flag == DryadFlag.IgnoreErr
-        or flag == DryadFlag.Anchoring
+        flag == DryadsFlag.InVisible
+        or flag == DryadsFlag.IgnoreErr
+        or flag == DryadsFlag.Anchoring
     ):
-        DryadFlags.append(flag)
-    elif flag == DryadFlag.AcceptArg:
-        if DryadContainer.DryadArg is None:
-            print("\033[31m" + "No DryadArg provided." + "\033[0m")
+        DryadsFlags.append(flag)
+    elif flag == DryadsFlag.AcceptArg:
+        if DryadsContainer.DryadsArg is None:
+            print("\033[31m" + "No DryadsArg provided." + "\033[0m")
             exit(-1)
     else:
         assert False
 
 
-def flag_pop(flag: DryadFlag, data: Union[str, list, None] = None):
-    assert type(flag) is DryadFlag
-    if flag == DryadFlag.PrefixCmd:
+def flag_pop(flag: DryadsFlag, data: Union[str, list, None] = None):
+    assert type(flag) is DryadsFlag
+    if flag == DryadsFlag.PrefixCmd:
         if type(data) is str:
             PrefixCmds.pop()
         elif type(data) is list:
@@ -65,30 +65,30 @@ def flag_pop(flag: DryadFlag, data: Union[str, list, None] = None):
         else:
             assert False
     elif (
-        flag == DryadFlag.InVisible
-        or flag == DryadFlag.IgnoreErr
-        or flag == DryadFlag.Anchoring
+        flag == DryadsFlag.InVisible
+        or flag == DryadsFlag.IgnoreErr
+        or flag == DryadsFlag.Anchoring
     ):
-        DryadFlags.pop()
-    elif flag == DryadFlag.AcceptArg:
+        DryadsFlags.pop()
+    elif flag == DryadsFlag.AcceptArg:
         pass
     else:
         assert False
 
 
-def dryad_run_shell_cmd(cmd: str) -> None:
+def dryads_run_shell_cmd(cmd: str) -> None:
     assert len(ErrStopCmd) > 0
     pre_cmd = PrefixCmds
 
-    if DryadFlag.Anchoring not in DryadFlags:
-        pre_cmd = [f"cd {DryadEnv.SCRIPTPATH}"] + pre_cmd
+    if DryadsFlag.Anchoring not in DryadsFlags:
+        pre_cmd = [f"cd {DryadsEnv.SCRIPTPATH}"] + pre_cmd
 
-    if DryadFlag.IgnoreErr not in DryadFlags:
+    if DryadsFlag.IgnoreErr not in DryadsFlags:
         pre_cmd = [ErrStopCmd] + pre_cmd
 
     # set -> cd main_path -> pre cmd -> cmd
 
-    if DryadFlag.InVisible not in DryadFlags:
+    if DryadsFlag.InVisible not in DryadsFlags:
         print("\033[33;1m" + cmd + "\033[0m")
 
     cmd = "\n".join(pre_cmd) + "\n" + cmd
@@ -96,8 +96,8 @@ def dryad_run_shell_cmd(cmd: str) -> None:
     try:
         run_shell_cmd(cmd)
     except subprocess.CalledProcessError as e:
-        if DryadFlag.IgnoreErr not in DryadFlags:
-            if DryadFlag.InVisible not in DryadFlags:
+        if DryadsFlag.IgnoreErr not in DryadsFlags:
+            if DryadsFlag.InVisible not in DryadsFlags:
                 print("\033[41m\033[37m" + "Fail" + "\033[0m")
             exit(-1)
     except Exception as e:
@@ -146,7 +146,7 @@ def right_shift(text: str, dist: int) -> str:
     return "\n".join(lines)
 
 
-def dryad_shift(text: str, dist: int, first: bool) -> str:
+def dryads_shift(text: str, dist: int, first: bool) -> str:
     """
     消除左边空列,
     然后右对齐,
@@ -164,16 +164,16 @@ def dryad_shift(text: str, dist: int, first: bool) -> str:
 
 
 def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
-    DryadTreeLeafNodeType = Union[
-        str, Callable, DryadFlag, List[Union[str, Callable, DryadFlag]]
+    DryadsTreeLeafNodeType = Union[
+        str, Callable, DryadsFlag, List[Union[str, Callable, DryadsFlag]]
     ]
 
-    def lead_node_to_doc(node_content: DryadTreeLeafNodeType) -> list:
+    def lead_node_to_doc(node_content: DryadsTreeLeafNodeType) -> list:
         if type(node_content) is str:
             return [left_shift(node_content.rstrip())]
         elif callable(node_content):
             return [left_shift(str(node_content.__doc__).rstrip())]
-        elif type(node_content) is DryadFlag:
+        elif type(node_content) is DryadsFlag:
             return [str(node_content)]
         elif type(node_content) is list:
             return [
@@ -182,7 +182,7 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
         else:
             assert False
 
-    def dfs_internal_node(node: Union[dict, DryadTreeLeafNodeType], prefix_opts: list):
+    def dfs_internal_node(node: Union[dict, DryadsTreeLeafNodeType], prefix_opts: list):
         if type(node) is not dict:
             prefix_opt = " ".join(prefix_opts)
             prefix_len = len(prefix_opt + ": ")
@@ -191,7 +191,7 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
 
             print(f"\033[36m{prefix_opt}\033[0m: ", end="")
             for i, part in enumerate(parts):
-                line = dryad_shift(part, prefix_len, True if i == 0 else False)
+                line = dryads_shift(part, prefix_len, True if i == 0 else False)
                 if i % 2 == 0:
                     print(f"\033[33m{line}\033[0m")
                 else:
@@ -202,7 +202,7 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
                 prefix_cmds.append("/".join(opt))
             elif type(opt) is str:
                 prefix_cmds.append(opt)
-            elif type(opt) is DryadFlag:
+            elif type(opt) is DryadsFlag:
                 prefix_cmds.append(str(opt))
             else:
                 assert False

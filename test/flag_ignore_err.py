@@ -1,4 +1,4 @@
-from dryad import Dryad, DryadFlag
+from dryads import Dryads, DryadsFlag
 
 cmd_tree = {
     "err-interrupt": [
@@ -8,7 +8,7 @@ cmd_tree = {
         "echo valid command",
     ],
     "err-continue": [
-        DryadFlag.IgnoreErr,
+        DryadsFlag.IgnoreErr,
         "error-command",
         "error-command",
         "error-command",
@@ -17,7 +17,7 @@ cmd_tree = {
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 """
 > python flag_ignore_err.py err-interrupt

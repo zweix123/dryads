@@ -1,4 +1,4 @@
-from dryad import Dryad, DryadContainer, DryadFlag
+from dryads import Dryads, DryadsContainer, DryadsFlag
 
 
 def example_func():
@@ -22,9 +22,9 @@ def complex_func():
 
 
 def input_func():
-    """Output DryadArg"""
-    assert DryadContainer.DryadArg is not None
-    print(DryadContainer.DryadArg)
+    """Output DryadsArg"""
+    assert DryadsContainer.DryadsArg is not None
+    print(DryadsContainer.DryadsArg)
 
 
 cmd_tree = {
@@ -37,4 +37,4 @@ cmd_tree = {
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)

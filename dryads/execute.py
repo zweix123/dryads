@@ -2,7 +2,7 @@ import os
 import subprocess
 import sys
 
-FILEPATH = os.path.join(os.path.expanduser("~"), "dryadfile")
+FILEPATH = os.path.join(os.path.expanduser("~"), "dryadsfile")
 
 
 def main():

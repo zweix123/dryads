@@ -1,4 +1,4 @@
-from dryad import Dryad, DryadFlag
+from dryads import Dryads, DryadsFlag
 
 
 def func():
@@ -10,16 +10,16 @@ cmd_tree = {
         "1": "echo 1",
         "2": "echo 2",
         "x": [
-            DryadFlag.AcceptArg,
+            DryadsFlag.AcceptArg,
             func,
         ],
     }
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 """
 > python flag_accept_arg_invalid2.py invalid-opt
-No DryadArg provided in subtree.
+No DryadsArg provided in subtree.
 """

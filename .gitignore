@@ -6,5 +6,5 @@
 **/__pycache__/
 # python build tools
 dist/
-build/
-*.egg-info/
+# dryads
+**/.dryads.tmp

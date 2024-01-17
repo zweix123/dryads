@@ -1,4 +1,4 @@
-from dryad import Dryad, DryadFlag
+from dryads import Dryads, DryadsFlag
 
 cmd_tree = {
     "vis-cmd": [
@@ -7,7 +7,7 @@ cmd_tree = {
         "echo 3",
     ],
     "invis-cmd": [
-        DryadFlag.InVisible,
+        DryadsFlag.InVisible,
         "echo 1",
         "echo 2",
         "echo 3",
@@ -15,7 +15,7 @@ cmd_tree = {
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 """
 > python test/flag_invisiable.py vis-cmd

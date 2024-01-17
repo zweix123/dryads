@@ -1,8 +1,8 @@
-from dryad import Dryad, DryadFlag
+from dryads import Dryads, DryadsFlag
 
 cmd_tree = {
-    DryadFlag.PrefixCmd: ["cd ~"],
+    DryadsFlag.PrefixCmd: ["cd ~"],
     "opt": ["pwd"],
 }
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)

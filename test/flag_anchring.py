@@ -1,29 +1,29 @@
-from dryad import Dryad, DryadFlag
+from dryads import Dryads, DryadsFlag
 
 cmd_tree = {
     "pwd": {
         "for-script": "pwd",
-        "cur": [DryadFlag.Anchoring, "pwd"],
+        "cur": [DryadsFlag.Anchoring, "pwd"],
     },
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 """
 > python flag_anchring.py pwd for-script
 pwd
-/home/dev/dryad/test
+/home/dev/dryads/test
 
 > python flag_anchring.py pwd cur
 pwd
-/home/dev/dryad/test
+/home/dev/dryads/test
 
 > python test/flag_anchring.py pwd for-script
 pwd
-/home/dev/dryad/test
+/home/dev/dryads/test
 
 > python test/flag_anchring.py pwd cur
 pwd
-/home/dev/dryad
+/home/dev/dryads
 """

@@ -1,13 +1,15 @@
 [tool.poetry]
-name = "dryad"
-version = "0.1.0"
+name = "dryads"
+version = "1.2.0"
 description = ""
 authors = ["zweix123 <1979803044@qq.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.6"
 
+[tool.poetry.scripts]
+ds = "dryads.execute:main"
 
 [build-system]
 requires = ["poetry-core"]

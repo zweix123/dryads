@@ -1,4 +1,4 @@
-# Dryad
+# Dryads
 
 非侵入式命令行构建工具以及脚本管理工具
 
@@ -40,10 +40,21 @@
 
 ## Install
 
-目前该库没有放到PyPI，但是可以通过下面命令安装
-```bash
-pip install git+https://github.com/zweix123/dryad.git@master
-```
++ 通过PyPI：
+    ```bash
+    pip install dryads
+    ```
+
+    同时会下载可执行文件`ds`/`ds.exe`，它会执行路径为`~/dryadsfile`的使用该框架的正常脚本
+
++ 通过源代码下载：
+
+    ```bash
+    pip install git+https://github.com/zweix123/dryads.git@master
+    ```
+
+## Use
+
 如果是在Linux系统，通过在脚本前添加shebang
 ```python
 #!/usr/bin/env python3
@@ -51,25 +62,16 @@ pip install git+https://github.com/zweix123/dryad.git@master
 ```
 则可以通过`./script.py`这种很接近命令的形式使用
 
-对比`make`和`just`，我们希望直接运行某命令，可以通过
-```bash
-python3 setup.py sdist bdist_wheel
-python3 -m pip install --force-reinstall dist/dryad-1.0.0-py3-none-any.whl
-```
-得到`dryad`命令，它会执行路径为`~/dryadfile`的使用该框架的正常脚本，来实现类似效果
-
-## Use
-
 我们只需要描述好树形结构即可，即通过`dict`类型的变量，参数解析和执行交给框架，下面是一个简单的例子
 ```python
 # test/example.py
-from dryad import Dryad, DryadContainer, DryadFlag, run_shell_cmd
+from dryads import Dryads, DryadsContainer, DryadsFlag, run_shell_cmd
 
 def create_python():
-    run_shell_cmd(f"poetry new {DryadContainer.DryadArg}")
+    run_shell_cmd(f"poetry new {DryadsContainer.DryadsArg}")
 
 def create_rust():
-    run_shell_cmd(f"cargo new {DryadContainer.DryadArg}")
+    run_shell_cmd(f"cargo new {DryadsContainer.DryadsArg}")
 
 CMDS = {
     "echo": {
@@ -78,26 +80,26 @@ CMDS = {
         "Math": ["echo 42", "echo 3.14"],
     },
     "work": {
-        DryadFlag.PrefixCmd: ["cd Project"],
+        DryadsFlag.PrefixCmd: ["cd Project"],
         "build": "cd build && make -j`nproc`",
         "run": "./build/bin/work",
     },
     "create": {
         "python": [
-            DryadFlag.Anchoring,
-            DryadFlag.AcceptArg,
+            DryadsFlag.Anchoring,
+            DryadsFlag.AcceptArg,
             create_python,
         ],
         "rust": [
-            DryadFlag.Anchoring,
-            DryadFlag.AcceptArg,
+            DryadsFlag.Anchoring,
+            DryadsFlag.AcceptArg,
             create_rust,
         ],
     },
-    ("-d", "--dryad"): "echo Hello Dryad",
+    ("-d", "--dryads"): "echo Hello Dryads",
 }
 
-Dryad(CMDS)
+Dryads(CMDS)
 ```
 
 + 基本元素：
@@ -118,17 +120,17 @@ Dryad(CMDS)
     echo Chinese: echo 我可以吞下玻璃而不受到伤害
     echo Math: echo 42
               echo 3.14
-    work DryadFlag.PrefixCmd: cd Project
+    work DryadsFlag.PrefixCmd: cd Project
     work build: cd build && make -j`nproc`
     work run: ./build/bin/work
-    create python: DryadFlag.Anchoring
-                  DryadFlag.AcceptArg
+    create python: DryadsFlag.Anchoring
+                  DryadsFlag.AcceptArg
                   Create Python
-    create rust: DryadFlag.Anchoring
-                DryadFlag.AcceptArg
+    create rust: DryadsFlag.Anchoring
+                DryadsFlag.AcceptArg
                 Create Rust
-    -d/--dryad: echo Hello Dryad
-    env: Print Dryad environment variable.
+    -d/--dryads: echo Hello Dryads
+    env: Print Dryads environment variable.
     ```
 
   + 各选项help option：在任意选项后，都可以添加help option查看之后的命令
@@ -166,11 +168,11 @@ Dryad(CMDS)
     ```
 
 + 标记
-  + `DryadFlag.Anchoring`: 作为叶子的值, 表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./test/flag_anchring.py)
-  + `DryadFlag.AcceptArg`: 作为叶子的值, 表示该选项还接收一个可选参数, 并将参数放在变量DryadArg中, 例子在[AcceptArg](./test/flag_accept_arg_valid.py), 还有两个非法的例子, [AcceptArg Invalid](./test/flag_accept_arg_invalid1.py) | [AcceptArg Invalid](./test/flag_accept_arg_invalid2.py)
-  + `DryadFlag.InVisible`: 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印, 例子在[InVisible](./test/flag_invisiable.py)
-  + `DryadFlag.IgnoreErr`: 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止, 例子在[IgnoreErr](./test/flag_ignore_err.py)
-  + `DryadFlag.PrefixCmd`: 作为某个节点的键, 其值对应的脚本为子树中所有脚本的前置脚本, 例子在[PrefixCmd](./test/flag_prefix_cmd.py)
+  + `DryadsFlag.Anchoring`: 作为叶子的值, 表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./test/flag_anchring.py)
+  + `DryadsFlag.AcceptArg`: 作为叶子的值, 表示该选项还接收一个可选参数, 并将参数放在变量DryadsArg中, 例子在[AcceptArg](./test/flag_accept_arg_valid.py), 还有两个非法的例子, [AcceptArg Invalid](./test/flag_accept_arg_invalid1.py) | [AcceptArg Invalid](./test/flag_accept_arg_invalid2.py)
+  + `DryadsFlag.InVisible`: 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印, 例子在[InVisible](./test/flag_invisiable.py)
+  + `DryadsFlag.IgnoreErr`: 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止, 例子在[IgnoreErr](./test/flag_ignore_err.py)
+  + `DryadsFlag.PrefixCmd`: 作为某个节点的键, 其值对应的脚本为子树中所有脚本的前置脚本, 例子在[PrefixCmd](./test/flag_prefix_cmd.py)
     + 该标记只能用于`dict`不能用于`list`，但是我们往往是对叶子节点`list`中的一系列命令设置前置脚本，通过再套一层dict解决。
 
 ## TODO

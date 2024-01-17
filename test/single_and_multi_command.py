@@ -1,4 +1,4 @@
-from dryad import Dryad
+from dryads import Dryads
 
 cmd_tree = {
     "single": [
@@ -11,14 +11,14 @@ cmd_tree = {
     """,
 }
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 
 """
 > python single_and_multi_command.py single
 cd ~
 pwd
-/home/dev/dryad/test
+/home/dev/dryads/test
 
 > python single_and_multi_command.py multi
 

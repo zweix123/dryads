@@ -3,14 +3,14 @@ import os
 import sys
 from typing import Any, Callable, Union, List
 
-from . import container as DryadContainer
-from . import utils as DryadUtil
-from .common import DryadEnv, DryadFlag
+from . import container as DryadsContainer
+from . import utils as DryadsUtil
+from .common import DryadsEnv, DryadsFlag
 
 
-class Dryad:
+class Dryads:
     def __init__(self, cmd_tree: dict) -> None:
-        DryadEnv.SCRIPTPATH = os.path.dirname(inspect.stack()[1].filename)  # trick
+        DryadsEnv.SCRIPTPATH = os.path.dirname(inspect.stack()[1].filename)  # trick
 
         self.cmd_tree = cmd_tree
         self.opts: List[str] = []
@@ -21,12 +21,12 @@ class Dryad:
 
     def check(self) -> None:
         """
-        + internal node: dict, key is str | tuple[str] | DryadFlag
-        + leaf node: DryadFlag, str, Callable, list[DryadFlag | str | Callable]
+        + internal node: dict, key is str | tuple[str] | DryadsFlag
+        + leaf node: DryadsFlag, str, Callable, list[DryadsFlag | str | Callable]
         """
 
         def check_cmd_tree(
-            cmd_tree_node: Union[dict, list, str, Callable, DryadFlag],
+            cmd_tree_node: Union[dict, list, str, Callable, DryadsFlag],
         ) -> None:
             if type(cmd_tree_node) == dict:
                 # internal node
@@ -46,21 +46,21 @@ class Dryad:
                         raise Exception(
                             "[Drayd] There are alse dict ele in the leaf nodes of cmd dict."
                         )
-                elif type(cmd_tree_node) == DryadFlag:
-                    raise Exception("[Drayd] DryadFlag should not be used alone.")
+                elif type(cmd_tree_node) == DryadsFlag:
+                    raise Exception("[Drayd] DryadsFlag should not be used alone.")
 
         check_cmd_tree(self.cmd_tree)
 
     def config(self) -> None:
         # add command 'env'
-        if DryadUtil.cmd_tree_match_opt(self.cmd_tree, "env") is not None:
-            raise Exception("[Dryad] The 'env' option conflicts with built-in opts.")
-        self.cmd_tree["env"] = DryadEnv.println
+        if DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "env") is not None:
+            raise Exception("[Dryads] The 'env' option conflicts with built-in opts.")
+        self.cmd_tree["env"] = DryadsEnv.println
 
     def main(self) -> None:
         self.opts = sys.argv[1:]
         if len(self.opts) == 0:
-            DryadUtil.help_opt_func_gen(self.cmd_tree, [])()
+            DryadsUtil.help_opt_func_gen(self.cmd_tree, [])()
         else:
             self.opt_dfs(self.opts, self.cmd_tree)
 
@@ -68,15 +68,15 @@ class Dryad:
         if callable(cmds):
             cmds()
         elif type(cmds) is str:
-            DryadUtil.dryad_run_shell_cmd(cmds)
+            DryadsUtil.dryads_run_shell_cmd(cmds)
         elif type(cmds) is list:
-            [DryadUtil.flag_push(ele) for ele in cmds if type(ele) is DryadFlag]
-            [self.dfs_run(ele) for ele in cmds if type(ele) is not DryadFlag]
-            [DryadUtil.flag_pop(ele) for ele in cmds if type(ele) is DryadFlag]
+            [DryadsUtil.flag_push(ele) for ele in cmds if type(ele) is DryadsFlag]
+            [self.dfs_run(ele) for ele in cmds if type(ele) is not DryadsFlag]
+            [DryadsUtil.flag_pop(ele) for ele in cmds if type(ele) is DryadsFlag]
         elif type(cmds) is dict:
-            [DryadUtil.flag_push(k, v) for k, v in cmds.items() if type(k) is DryadFlag]
-            [self.dfs_run(v) for k, v in cmds.items() if type(k) is not DryadFlag]
-            [DryadUtil.flag_pop(k, v) for k, v in cmds.items() if type(k) is DryadFlag]
+            [DryadsUtil.flag_push(k, v) for k, v in cmds.items() if type(k) is DryadsFlag]
+            [self.dfs_run(v) for k, v in cmds.items() if type(k) is not DryadsFlag]
+            [DryadsUtil.flag_pop(k, v) for k, v in cmds.items() if type(k) is DryadsFlag]
         else:
             assert False, cmds
 
@@ -91,10 +91,10 @@ class Dryad:
                 else:
                     # leaf node
                     if type(cmd_tree_node) == list and any(
-                        [ele == DryadFlag.AcceptArg for ele in cmd_tree_node]
+                        [ele == DryadsFlag.AcceptArg for ele in cmd_tree_node]
                     ):
                         print(
-                            "\033[31m" + "No DryadArg provided in subtree." + "\033[0m"
+                            "\033[31m" + "No DryadsArg provided in subtree." + "\033[0m"
                         )
                         exit(-1)
 
@@ -106,19 +106,19 @@ class Dryad:
             type(cmds) is not dict  # 叶子节点
             and len(opts) == 1  # 参数只剩一个
             and type(cmds) is list  # 叶子内容是列表
-            and DryadFlag.AcceptArg in cmds  # DryadFlag.AcceptArg在其中
+            and DryadsFlag.AcceptArg in cmds  # DryadsFlag.AcceptArg在其中
         ):
-            DryadContainer.DryadArg = opts[0]
+            DryadsContainer.DryadsArg = opts[0]
             self.dfs_run(cmds)
             return
 
         def internal_match() -> Union[dict, list, str, None]:
-            dummy = DryadUtil.cmd_tree_match_opt(cmds, opts[0])
+            dummy = DryadsUtil.cmd_tree_match_opt(cmds, opts[0])
             if dummy is not None:
                 return dummy
 
             if opts[0] in ("-h", "--help"):
-                return DryadUtil.help_opt_func_gen(cmds, path)
+                return DryadsUtil.help_opt_func_gen(cmds, path)
 
             return None
 
@@ -128,10 +128,10 @@ class Dryad:
             print(f'give it a try of option "--help"', end=".\n")
             return
 
-        if DryadFlag.PrefixCmd in cmds:
-            DryadUtil.flag_push(DryadFlag.PrefixCmd, cmds[DryadFlag.PrefixCmd])
+        if DryadsFlag.PrefixCmd in cmds:
+            DryadsUtil.flag_push(DryadsFlag.PrefixCmd, cmds[DryadsFlag.PrefixCmd])
 
         self.opt_dfs(opts[1:], internal_match(), path + [opts[0]])
 
-        if DryadFlag.PrefixCmd in cmds:
-            DryadUtil.flag_pop(DryadFlag.PrefixCmd, cmds[DryadFlag.PrefixCmd])
+        if DryadsFlag.PrefixCmd in cmds:
+            DryadsUtil.flag_pop(DryadsFlag.PrefixCmd, cmds[DryadsFlag.PrefixCmd])

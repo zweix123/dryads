@@ -1,0 +1,55 @@
+# For more information see:
+# https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#publishing-to-package-registries
+
+
+# Action name
+name: Upload Python Package
+
+on:
+  # trigger action when master branch push
+  push: 
+   branches:
+     - master
+  
+  # trigger action when master branch merge pr
+  pull_request:
+    branches:
+      - master
+  
+  # trigger action when release
+  #release:
+  #  types: [created]
+
+
+jobs:
+  deploy:
+    # job name
+    name: publish python package to PYPI
+    # machine environment
+    runs-on: ubuntu-latest
+
+    steps:
+    # https://github.com/actions/checkout
+    - uses: actions/checkout@v4
+    
+    # https://github.com/actions/setup-python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '^3.6'
+    
+    # install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+        pip install poetry
+    
+    # build and publish
+    - name: Build and publish
+      env:
+        username: __token__
+        password: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        poetry build
+        twine upload --verbose --username ${{ env.username }} --password ${{ env.password }} --repository pypi dist/*

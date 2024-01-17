@@ -1,24 +1,24 @@
-from dryad import Dryad, DryadContainer, DryadFlag
+from dryads import Dryads, DryadsContainer, DryadsFlag
 
 
 def flag_func():
-    """Print dryad arg"""
-    print(DryadContainer.DryadArg)
+    """Print dryads arg"""
+    print(DryadsContainer.DryadsArg)
 
 
 cmd_tree = {
     "opt": [
-        DryadFlag.AcceptArg,
+        DryadsFlag.AcceptArg,
         flag_func,
     ]
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 """
 > python flag_accept_arg_valid.py opt
-No DryadArg provided in subtree.
+No DryadsArg provided in subtree.
 
 > python flag_accept_arg_valid.py opt "Hello World"
 Hello World

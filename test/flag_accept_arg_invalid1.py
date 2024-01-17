@@ -1,14 +1,14 @@
-from dryad import Dryad, DryadFlag
+from dryads import Dryads, DryadsFlag
 
 cmd_tree = {
-    "invalid-opt": DryadFlag.AcceptArg,
+    "invalid-opt": DryadsFlag.AcceptArg,
 }
 
 
-Dryad(cmd_tree)
+Dryads(cmd_tree)
 
 """
 > python flag_accept_arg_invalid.py      
 ...
-Exception: [Drayd] DryadFlag should not be used alone.
+Exception: [Drayd] DryadsFlag should not be used alone.
 """
