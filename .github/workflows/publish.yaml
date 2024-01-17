@@ -7,9 +7,9 @@ name: Upload Python Package
 
 on:
   # trigger action when master branch push
-  push: 
-   branches:
-     - master
+  # push: 
+  #  branches:
+  #    - master
   
   # trigger action when master branch merge pr
   pull_request:
@@ -17,8 +17,8 @@ on:
       - master
   
   # trigger action when release
-  #release:
-  #  types: [created]
+  # release:
+  #   types: [created]
 
 
 jobs:
