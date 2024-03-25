@@ -15,8 +15,8 @@ class Dryads:
         self.cmd_tree = cmd_tree
         self.opts: List[str] = []
 
-        self.check()
         self.config()
+        self.check()
         self.main()
 
     def check(self) -> None:
@@ -27,11 +27,20 @@ class Dryads:
         if DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "env") is not None:
             raise Exception("[Dryads] The 'env' option conflicts with built-in opts.")
         self.cmd_tree["env"] = DryadsEnv.println
+        # add command 'help'
+        if (
+            DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "-h") is not None
+            or DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "--help") is not None
+        ):
+            raise Exception(
+                "[Dryads] The '-h'/'--help' option conflicts with built-in opts."
+            )
+        self.cmd_tree[("-h", "--help")] = DryadsUtil.help_opt_func_gen(self.cmd_tree)
 
     def main(self) -> None:
         self.opts = sys.argv[1:]
         if len(self.opts) == 0:
-            DryadsUtil.help_opt_func_gen(self.cmd_tree, [])()
+            DryadsUtil.help_opt_func_gen(self.cmd_tree)()
         else:
             self.opt_dfs(self.opts, self.cmd_tree)
 

@@ -7,8 +7,10 @@
 
 - Bug修复
     - 对参数检测禁止空格
+    - help option显示help option本身
 
 - 改进
+    - help option的表现形式
 
 - 移除或者废弃的功能
 
