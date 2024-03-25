@@ -1,6 +1,7 @@
 import os
 import sys
 from enum import Enum, auto
+from typing import Callable, Dict, List, Tuple, Union
 
 
 class DryadsFlag(Enum):
@@ -9,6 +10,13 @@ class DryadsFlag(Enum):
     InVisible = auto()  # 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印
     IgnoreErr = auto()  # 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止
     PrefixCmd = auto()  # 作为某个节点的键, 其值对应的脚本为子树中所有脚本的前置脚本
+
+
+DryadsCmdTreeLeafType = Union[
+    str, Callable, List[Union[str, Callable, DryadsFlag, Tuple[DryadsFlag, List[str]]]]
+]
+DryadsCmdTreeInternalKeyType = Union[str, DryadsFlag, Tuple[str]]
+DryadsCmdTreeInternalType = Dict[DryadsCmdTreeInternalKeyType, DryadsCmdTreeLeafType]
 
 
 class DryadsEnv:

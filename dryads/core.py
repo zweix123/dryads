@@ -1,7 +1,7 @@
 import inspect
 import os
 import sys
-from typing import Any, Callable, Union, List
+from typing import Any, Callable, List, Union
 
 from . import container as DryadsContainer
 from . import utils as DryadsUtil
@@ -15,52 +15,32 @@ class Dryads:
         self.cmd_tree = cmd_tree
         self.opts: List[str] = []
 
-        self.check()
         self.config()
+        self.check()
         self.main()
 
     def check(self) -> None:
-        """
-        + internal node: dict, key is str | tuple[str] | DryadsFlag
-        + leaf node: DryadsFlag, str, Callable, list[DryadsFlag | str | Callable]
-        """
-
-        def check_cmd_tree(
-            cmd_tree_node: Union[dict, list, str, Callable, DryadsFlag],
-        ) -> None:
-            if type(cmd_tree_node) == dict:
-                # internal node
-                opts = [
-                    opt
-                    for key in cmd_tree_node.keys()
-                    for opt in (key if type(key) == list else [key])
-                ]
-                if len(opts) != len(set(opts)):
-                    raise Exception("[Drayd] Conflicting opts in commands dict.")
-                for son_node in cmd_tree_node.values():
-                    check_cmd_tree(son_node)
-            else:
-                # leaf node
-                if type(cmd_tree_node) == list:
-                    if any([type(ele) == dict for ele in cmd_tree_node]):
-                        raise Exception(
-                            "[Drayd] There are alse dict ele in the leaf nodes of cmd dict."
-                        )
-                elif type(cmd_tree_node) == DryadsFlag:
-                    raise Exception("[Drayd] DryadsFlag should not be used alone.")
-
-        check_cmd_tree(self.cmd_tree)
+        DryadsUtil.check_cmd_tree(self.cmd_tree)
 
     def config(self) -> None:
         # add command 'env'
         if DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "env") is not None:
             raise Exception("[Dryads] The 'env' option conflicts with built-in opts.")
         self.cmd_tree["env"] = DryadsEnv.println
+        # add command 'help'
+        if (
+            DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "-h") is not None
+            or DryadsUtil.cmd_tree_match_opt(self.cmd_tree, "--help") is not None
+        ):
+            raise Exception(
+                "[Dryads] The '-h'/'--help' option conflicts with built-in opts."
+            )
+        self.cmd_tree[("-h", "--help")] = DryadsUtil.help_opt_func_gen(self.cmd_tree)
 
     def main(self) -> None:
         self.opts = sys.argv[1:]
         if len(self.opts) == 0:
-            DryadsUtil.help_opt_func_gen(self.cmd_tree, [])()
+            DryadsUtil.help_opt_func_gen(self.cmd_tree)()
         else:
             self.opt_dfs(self.opts, self.cmd_tree)
 
@@ -74,9 +54,17 @@ class Dryads:
             [self.dfs_run(ele) for ele in cmds if type(ele) is not DryadsFlag]
             [DryadsUtil.flag_pop(ele) for ele in cmds if type(ele) is DryadsFlag]
         elif type(cmds) is dict:
-            [DryadsUtil.flag_push(k, v) for k, v in cmds.items() if type(k) is DryadsFlag]
+            [
+                DryadsUtil.flag_push(k, v)
+                for k, v in cmds.items()
+                if type(k) is DryadsFlag
+            ]
             [self.dfs_run(v) for k, v in cmds.items() if type(k) is not DryadsFlag]
-            [DryadsUtil.flag_pop(k, v) for k, v in cmds.items() if type(k) is DryadsFlag]
+            [
+                DryadsUtil.flag_pop(k, v)
+                for k, v in cmds.items()
+                if type(k) is DryadsFlag
+            ]
         else:
             assert False, cmds
 
