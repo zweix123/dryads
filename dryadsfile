@@ -1,0 +1,36 @@
+import os
+
+from dryads import Dryads, run_shell_cmd
+
+
+def format():
+    """Dryads was developed in the Python 3.7 environment and formatted using the latest version of the black library in Python"""
+
+    def get_files(dirname: str):
+        return [
+            os.path.join(root, file)
+            for root, dir, files in os.walk(dirname)
+            for file in files
+            if file.endswith("py")
+        ]
+
+    files = get_files("dryads") + get_files("test") + ["dryadsfile"]
+    run_shell_cmd("black " + " ".join(files))
+
+
+CMDS = {
+    "reload": [
+        "poetry build",
+        "python -m pip install .\dist\dryads-1.2.0-py3-none-any.whl --force-reinstall",
+    ],
+    "test": {
+        "regression": [
+            "python ./test/test_exception.py",
+            "python ./test/test_help.py",
+        ]
+    },
+    "format": format,
+}
+
+
+Dryads(CMDS)
