@@ -1,5 +1,5 @@
 import subprocess
-from typing import Any, Callable, Union, List
+from typing import Any, Callable, List, Tuple, Union
 
 from . import container as DryadsContainer
 from .common import DryadsEnv, DryadsFlag
@@ -231,3 +231,71 @@ def cmd_tree_match_opt(cmd_tree: dict, opt: str) -> Union[Any, None]:
         if (type(k) is str and opt == k) or (type(k) is tuple and opt in k):
             return v
     return None
+
+
+def _check_cmd_tree_leaf(
+    value: Union[
+        str,
+        Callable,
+        List[Union[DryadsFlag, str, Callable, Tuple[DryadsFlag, List[str]]]],
+    ]
+):
+    e = Exception(
+        "[Dryads] The commands dict's leaf node must be str, Callable, [DryadsFlag | str | Callable | (DryadsFlag, [str])]"
+    )
+
+    def check_cmd_tree_leaf_tuple(value: Tuple[DryadsFlag, List[str]]):
+        if not isinstance(value, tuple):
+            raise e
+        if len(value) != 2:
+            raise e
+        if not isinstance(value[0], DryadsFlag):
+            raise e
+        if not isinstance(value[1], list):
+            raise e
+        if not all(isinstance(ele, str) or callable(ele) for ele in value[1]):
+            raise e
+        pass
+
+    if isinstance(value, str) or callable(value):
+        return
+    if isinstance(value, list):
+        for ele in value:
+            if isinstance(ele, (str, DryadsFlag)) or callable(ele):
+                continue
+            elif isinstance(ele, tuple):
+                check_cmd_tree_leaf_tuple(ele)
+            else:
+                raise e
+
+
+def check_cmd_tree(
+    cmd_tree_node: Union[dict, list, str, Callable, DryadsFlag],
+) -> None:
+    internal_exception = Exception(
+        "[Dryads] The commands dict's keys only support str, tuple[str] and DryadsFlag."
+    )
+    if type(cmd_tree_node) == dict:  # internal node
+        opts: List[Union[str, DryadsFlag]] = []
+        for k in cmd_tree_node.keys():
+            if isinstance(k, str):
+                opts.append(k)
+            elif isinstance(k, tuple):
+                if not all(isinstance(ele, str) for ele in k):
+                    raise internal_exception
+                opts.extend(k)
+            elif isinstance(k, DryadsFlag):
+                opts.append(k)
+            else:
+                raise internal_exception
+        if any(" " in opt for opt in opts if isinstance(opt, str)):
+            raise Exception(
+                "[Drayds] There are options have space char in commands dict."
+            )
+        if len(opts) != len(set(opts)):
+            raise Exception("[Drayds] There are conflicting opts in commands dict.")
+
+        for son_node in cmd_tree_node.values():
+            check_cmd_tree(son_node)
+    else:  # leaf node
+        _check_cmd_tree_leaf(cmd_tree_node)
