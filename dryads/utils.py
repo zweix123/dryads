@@ -1,8 +1,15 @@
 import subprocess
-from typing import Any, Callable, Union, List
+from typing import Any, Callable, List, Tuple, Union
 
 from . import container as DryadsContainer
-from .common import DryadsEnv, DryadsFlag
+from .common import (
+    DryadsCmdTreeInternalType,
+    DryadsCmdTreeLeafType,
+    DryadsEnv,
+    DryadsFlag,
+)
+
+# run command ==================================================================
 
 
 def run_shell_cmd(cmd: str) -> None:
@@ -105,6 +112,9 @@ def dryads_run_shell_cmd(cmd: str) -> None:
     # print("\033[42m\033[37m" + "Pass" + "\033[0m")
 
 
+# -h/--help ====================================================================
+
+
 def strip_line(text: str) -> str:
     """去除首尾空行"""
     while len(text) > 0 and text[0] == "\n":
@@ -163,12 +173,8 @@ def dryads_shift(text: str, dist: int, first: bool) -> str:
     return first_line + "\n" + right_shift(left_shift(text), dist)
 
 
-def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
-    DryadsTreeLeafNodeType = Union[
-        str, Callable, DryadsFlag, List[Union[str, Callable, DryadsFlag]]
-    ]
-
-    def lead_node_to_doc(node_content: DryadsTreeLeafNodeType) -> list:
+def help_opt_func_gen(cmd_tree: dict):
+    def lead_node_to_doc(node_content: DryadsCmdTreeLeafType) -> list:
         if type(node_content) is str:
             return [left_shift(node_content.rstrip())]
         elif callable(node_content):
@@ -182,16 +188,33 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
         else:
             assert False
 
-    def dfs_internal_node(node: Union[dict, DryadsTreeLeafNodeType], prefix_opts: list):
-        if type(node) is not dict:
-            prefix_opt = " ".join(prefix_opts)
-            prefix_len = len(prefix_opt + ": ")
-            assert not isinstance(node, dict)  # for mypy, it's only know isinstance
-            parts = lead_node_to_doc(node)
+    last_pre_opts: List[str] = []
 
-            print(f"\033[36m{prefix_opt}\033[0m: ", end="")
+    def dfs_internal_node(node: DryadsCmdTreeInternalType, pre_opts: List[str]):
+        if type(node) is not dict:
+            assert not isinstance(node, dict)  # for mypy, it's only know isinstance
+            first = True
+            for i in range(len(pre_opts)):
+                if first is True:
+                    first = False
+                else:
+                    print(" ", end="")
+                if i < len(last_pre_opts) and last_pre_opts[i] == pre_opts[i]:
+                    print(pre_opts[i], end="")
+                else:
+                    print(f"\033[36m{pre_opts[i]}\033[0m", end="")
+            last_pre_opts[:] = pre_opts
+            print(": ", end="")
+
+            pre_len = (
+                sum(list(map(len, pre_opts)))
+                + (len(pre_opts) - 1 if len(pre_opts) > 0 else 0)
+                + 2
+            )
+
+            parts = lead_node_to_doc(node)
             for i, part in enumerate(parts):
-                line = dryads_shift(part, prefix_len, True if i == 0 else False)
+                line = dryads_shift(part, pre_len, True if i == 0 else False)
                 if i % 2 == 0:
                     print(f"\033[33m{line}\033[0m")
                 else:
@@ -199,15 +222,15 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
             return
         for opt, son_node in node.items():
             if type(opt) is tuple:
-                prefix_cmds.append("/".join(opt))
+                pre_opts.append("/".join(opt))
             elif type(opt) is str:
-                prefix_cmds.append(opt)
+                pre_opts.append(opt)
             elif type(opt) is DryadsFlag:
-                prefix_cmds.append(str(opt))
+                pre_opts.append(str(opt))
             else:
                 assert False
-            dfs_internal_node(son_node, prefix_cmds)
-            prefix_cmds.pop()
+            dfs_internal_node(son_node, pre_opts)
+            pre_opts.pop()
 
     def func_gen():
         """Print commands and desciptions supported by script.py."""
@@ -215,15 +238,83 @@ def help_opt_func_gen(cmd_tree: dict, prefix_cmds: list):
         print("  Shell Commands, help会输出命令本身")
         print("  Python Function, help会输出函数的__doc__")
 
-        dfs_internal_node(cmd_tree, prefix_cmds)
+        dfs_internal_node(cmd_tree, [])
 
     return func_gen
 
 
-def help_opt_cmd_tree_gen(cmd_tree: dict, prefix_cmds: list) -> dict:
-    cmd_tree[("-h", "--help")] = help_opt_func_gen(cmd_tree, prefix_cmds)
-    # help_opt_func_gen返回的是一个可调用的函数, 但是这里还没有调用, 只有在真正调用时才遍历树, 所以合法
-    return cmd_tree
+# command dict check ===========================================================
+
+
+def _check_cmd_tree_leaf(
+    value: Union[
+        str,
+        Callable,
+        List[Union[DryadsFlag, str, Callable, Tuple[DryadsFlag, List[str]]]],
+    ]
+):
+    e = Exception(
+        "[Dryads] The commands dict's leaf node must be str, Callable, [DryadsFlag | str | Callable | (DryadsFlag, [str])]"
+    )
+
+    def check_cmd_tree_leaf_tuple(value: Tuple[DryadsFlag, List[str]]):
+        if not isinstance(value, tuple):
+            raise e
+        if len(value) != 2:
+            raise e
+        if not isinstance(value[0], DryadsFlag):
+            raise e
+        if not isinstance(value[1], list):
+            raise e
+        if not all(isinstance(ele, str) or callable(ele) for ele in value[1]):
+            raise e
+        pass
+
+    if isinstance(value, str) or callable(value):
+        return
+    if isinstance(value, list):
+        for ele in value:
+            if isinstance(ele, (str, DryadsFlag)) or callable(ele):
+                continue
+            elif isinstance(ele, tuple):
+                check_cmd_tree_leaf_tuple(ele)
+            else:
+                raise e
+
+
+def check_cmd_tree(
+    cmd_tree_node: Union[dict, list, str, Callable, DryadsFlag],
+) -> None:
+    internal_exception = Exception(
+        "[Dryads] The commands dict's keys only support str, tuple[str] and DryadsFlag."
+    )
+    if type(cmd_tree_node) == dict:  # internal node
+        opts: List[Union[str, DryadsFlag]] = []
+        for k in cmd_tree_node.keys():
+            if isinstance(k, str):
+                opts.append(k)
+            elif isinstance(k, tuple):
+                if not all(isinstance(ele, str) for ele in k):
+                    raise internal_exception
+                opts.extend(k)
+            elif isinstance(k, DryadsFlag):
+                opts.append(k)
+            else:
+                raise internal_exception
+        if any(" " in opt for opt in opts if isinstance(opt, str)):
+            raise Exception(
+                "[Drayds] There are options have space char in commands dict."
+            )
+        if len(opts) != len(set(opts)):
+            raise Exception("[Drayds] There are conflicting opts in commands dict.")
+
+        for son_node in cmd_tree_node.values():
+            check_cmd_tree(son_node)
+    else:  # leaf node
+        _check_cmd_tree_leaf(cmd_tree_node)
+
+
+# misc =========================================================================
 
 
 def cmd_tree_match_opt(cmd_tree: dict, opt: str) -> Union[Any, None]:
