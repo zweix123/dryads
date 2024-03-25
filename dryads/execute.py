@@ -2,14 +2,27 @@ import os
 import subprocess
 import sys
 
-FILEPATH = os.path.join(os.path.expanduser("~"), "dryadsfile")
+from .common import DryadsEnv
 
 
 def main():
-    if not os.path.exists(FILEPATH):
-        print(f"file {FILEPATH} not exists.")
+    DRYADSFILE = "dryadsfile"
+
+    dirpath = DryadsEnv.CALLPATH
+
+    while os.sep in dirpath:
+        filepath = os.path.join(dirpath, DRYADSFILE)
+
+        if os.path.exists(filepath):
+            break
+        dirpath = os.sep.join(dirpath.split(os.sep)[:-1])
+
+    if os.sep not in dirpath:
+        print(f"Can't find dryadsfile.")
         exit(-1)
-    subprocess.call([sys.executable, FILEPATH, *sys.argv[1:]])
+
+    filepath = os.path.join(dirpath, DRYADSFILE)
+    subprocess.call([sys.executable, filepath, *sys.argv[1:]])
 
 
 if __name__ == "__main__":
