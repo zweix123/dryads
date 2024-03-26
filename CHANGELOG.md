@@ -1,6 +1,11 @@
 # Changelog
 
-# [Unreleased]
+# [1.3.1]
+
+- Bug修复
+    - 对子命令使用help option bug
+
+# [1.3.0]
 
 - 新增功能
     - 修改`ds`命令含义，是从当前目录向上递归寻找`dryadsfile`文件
@@ -24,10 +29,4 @@
 
 - 新增功能：
     - 建立基本框架，将命令行项目描述为或者要维护的脚本组织为树形结构
-
-      树中基本元素：
-      中间节点类型为`dict`，
-      叶子节点类型为`str`或者`list[str | DryadsFlag]`，
-      其中中间节点的键的类型为`str`、`DryadsFlag`或者`tuple[str]`，值的类型为中间节点或叶子节点
-
     - 提供若干枚举标记，即`DryadsFlag`
