@@ -89,8 +89,11 @@ pwd""",
                 "English": "English",
             },
         }
-        test_case(self, CMDS, "123 123: 123\n123 中文: 中文\n123 English: English\n中文 123: 123\n中文 中文: 中文\n中文 English: English\nEnglish 123: 123\nEnglish 中文: 中文\nEnglish English: English\n")
-        
+        test_case(
+            self,
+            CMDS,
+            "123 123: 123\n123 中文: 中文\n123 English: English\n中文 123: 123\n中文 中文: 中文\n中文 English: English\nEnglish 123: 123\nEnglish 中文: 中文\nEnglish English: English\n",
+        )
 
 
 if __name__ == "__main__":

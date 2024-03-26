@@ -55,7 +55,7 @@ def flag_push(flag: DryadsFlag, data: Union[str, list, None] = None):
         DryadsFlags.append(flag)
     elif flag == DryadsFlag.AcceptArg:
         if DryadsContainer.DryadsArg is None:
-            print("\033[31m" + "No DryadsArg provided." + "\033[0m")
+            print("\033[31m" + "[Dryads] No DryadsArg provided." + "\033[0m")
             exit(-1)
     else:
         assert False
@@ -88,7 +88,7 @@ def dryads_run_shell_cmd(cmd: str) -> None:
     pre_cmd = PrefixCmds
 
     if DryadsFlag.Anchoring not in DryadsFlags:
-        pre_cmd = [f"cd {DryadsEnv.SCRIPTPATH}"] + pre_cmd
+        pre_cmd = [f"cd {DryadsEnv._SCRIPTPATH}"] + pre_cmd
 
     if DryadsFlag.IgnoreErr not in DryadsFlags:
         pre_cmd = [ErrStopCmd] + pre_cmd
@@ -173,7 +173,7 @@ def dryads_shift(text: str, dist: int, first: bool) -> str:
     return first_line + "\n" + right_shift(left_shift(text), dist)
 
 
-def help_opt_func_gen(cmd_tree: dict):
+def help_opt_func_gen(cmd_tree: dict, pre_opts: List[str] = []):
     def lead_node_to_doc(node_content: DryadsCmdTreeLeafType) -> list:
         if type(node_content) is str:
             return [left_shift(node_content.rstrip())]
@@ -238,7 +238,7 @@ def help_opt_func_gen(cmd_tree: dict):
         print("  Shell Commands, help会输出命令本身")
         print("  Python Function, help会输出函数的__doc__")
 
-        dfs_internal_node(cmd_tree, [])
+        dfs_internal_node(cmd_tree, pre_opts)
 
     return func_gen
 
@@ -271,8 +271,8 @@ def _check_cmd_tree_leaf(
         pass
 
     if isinstance(value, str) or callable(value):
-        return
-    if isinstance(value, list):
+        pass
+    elif isinstance(value, list):
         for ele in value:
             if isinstance(ele, (str, DryadsFlag)) or callable(ele):
                 continue
@@ -280,6 +280,14 @@ def _check_cmd_tree_leaf(
                 check_cmd_tree_leaf_tuple(ele)
             else:
                 raise e
+    else:
+        if isinstance(value, DryadsFlag):
+            print(
+                "\033[31m" + "[Dryads] DryadsFlag should not be used alone." + "\033[0m"
+            )
+            exit(-1)
+        else:
+            assert False, value
 
 
 def check_cmd_tree(

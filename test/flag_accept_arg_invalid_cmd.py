@@ -8,7 +8,6 @@ cmd_tree = {
 Dryads(cmd_tree)
 
 """
-> python flag_accept_arg_invalid.py      
-...
-Exception: [Drayd] DryadsFlag should not be used alone.
+> python flag_accept_arg_invalid_cmd.py
+[Dryads] DryadsFlag should not be used alone.
 """

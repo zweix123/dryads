@@ -10,7 +10,7 @@ from .common import DryadsEnv, DryadsFlag
 
 class Dryads:
     def __init__(self, cmd_tree: dict) -> None:
-        DryadsEnv.SCRIPTPATH = os.path.dirname(inspect.stack()[1].filename)  # trick
+        DryadsEnv._SCRIPTPATH = os.path.dirname(inspect.stack()[1].filename)  # trick
 
         self.cmd_tree = cmd_tree
         self.opts: List[str] = []
@@ -82,7 +82,9 @@ class Dryads:
                         [ele == DryadsFlag.AcceptArg for ele in cmd_tree_node]
                     ):
                         print(
-                            "\033[31m" + "No DryadsArg provided in subtree." + "\033[0m"
+                            "\033[31m"
+                            + "[Dryads] No DryadsArg provided in subtree."
+                            + "\033[0m"
                         )
                         exit(-1)
 

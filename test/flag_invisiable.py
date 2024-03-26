@@ -18,7 +18,7 @@ cmd_tree = {
 Dryads(cmd_tree)
 
 """
-> python test/flag_invisiable.py vis-cmd
+> python flag_invisiable.py vis-cmd     
 echo 1
 1
 echo 2
@@ -26,7 +26,7 @@ echo 2
 echo 3
 3
 
-> python test/flag_invisiable.py invis-cmd
+> python flag_invisiable.py invis-cmd
 1
 2
 3

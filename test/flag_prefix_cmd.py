@@ -6,3 +6,13 @@ cmd_tree = {
 }
 
 Dryads(cmd_tree)
+
+
+"""
+> pwd                          
+/home/dev/dryads/test
+
+> python flag_prefix_cmd.py opt
+pwd
+/home/dev
+"""

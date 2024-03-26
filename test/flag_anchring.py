@@ -11,11 +11,11 @@ cmd_tree = {
 Dryads(cmd_tree)
 
 """
-> python flag_anchring.py pwd for-script
+> python flag_anchring.py pwd for-script           
 pwd
 /home/dev/dryads/test
 
-> python flag_anchring.py pwd cur
+> python flag_anchring.py pwd cur       
 pwd
 /home/dev/dryads/test
 
@@ -23,7 +23,7 @@ pwd
 pwd
 /home/dev/dryads/test
 
-> python test/flag_anchring.py pwd cur
+> python test/flag_anchring.py pwd cur       
 pwd
 /home/dev/dryads
 """

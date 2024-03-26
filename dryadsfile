@@ -21,7 +21,7 @@ def format():
 CMDS = {
     "reload": [
         "poetry build",
-        "python -m pip install .\dist\dryads-1.2.0-py3-none-any.whl --force-reinstall",
+        "python -m pip install ./dist/dryads-1.3.0-py3-none-any.whl --force-reinstall",
     ],
     "test": {
         "regression": [
