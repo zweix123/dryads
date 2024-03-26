@@ -65,11 +65,17 @@ Simple CLI building tool and script management tool.
     pip install dryads
     ```
 
-    同时会下载命令`ds`，它会在当前路径递归向上寻找`dryadsfile`文件并使用Python解释器运行它。我们也建议每个项目下都有一个`dryadsfile`用来管理维护该项目需要命令，原因在[Just Further Ramblings](https://github.com/casey/just/tree/master?tab=readme-ov-file#further-ramblings)
+    同时会下载命令`ds`，它会在当前路径递归向上寻找`dryadsfile`文件并使用Python解释器运行它。我们也建议每个项目下都有一个`dryadsfile`用来管理维护该项目需要命令，原因在[Just Further Ramblings](https://github.com/casey/just/tree/master?tab=readme-ov-file#further-ramblings)。
 
 ## Use
 
 + 命令`ds`，如上，它会在当前路径递归向上寻找`dryadsfile`文件并使用Python解释器运行它。
+  + 编译器通常通过文件后缀名识别文件类型，但是`dryadsfile`并没有文件后缀，在VSCode中，可以在`.vscode/settings.json`中添加下面内容解决。
+    ```json
+    "files.associations": {
+        "dryadsfile": "python"
+    },
+    ```
 + 如果是在Linux系统，通过在脚本前添加shebang
 
     ```python
@@ -151,7 +157,7 @@ Dryads(CMDS)
     + 中间节点：执行该节点子树中的所有叶子节点  
       ![](./assets/classic_example_echo.png)
 
-+ 标记`DryadsFlag`，当希望概念某些默认的行为时，以标记的方式实现。其本身是枚举量，作为键或者叶子执行修改某种行为。
++ 标记`DryadsFlag`，当希望改变某些默认的行为时，以标记的方式实现。其本身是枚举量，作为键或者叶子执行修改某种行为。
 
   + `DryadsFlag.Anchoring`: 作为叶子的值, 表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./test/flag_anchring.py)
   + `DryadsFlag.AcceptArg`: 作为叶子的值, 表示该选项还接收一个可选参数, 并将参数放在变量DryadsArg中, 例子在[AcceptArg](./test/flag_accept_arg_valid.py), 还有两个非法的例子, [AcceptArg Invalid](./test/flag_accept_arg_invalid_cmd.py) | [AcceptArg Invalid](./test/flag_accept_arg_invalid_func.py)
