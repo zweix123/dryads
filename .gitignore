@@ -1,5 +1,5 @@
 # poetry
-.venv/        
+.venv/
 # mypy
 .mypy_cache/
 # python bytecode

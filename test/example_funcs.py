@@ -1,4 +1,4 @@
-from dryads import Dryads, DryadsContainer, DryadsFlag
+from dryads import Dryads, DryadsContainer
 
 
 def example_func():

@@ -251,7 +251,7 @@ def _check_cmd_tree_leaf(
         str,
         Callable,
         List[Union[DryadsFlag, str, Callable, Tuple[DryadsFlag, List[str]]]],
-    ]
+    ],
 ):
     e = Exception(
         "[Dryads] The commands dict's leaf node must be str, Callable, [DryadsFlag | str | Callable | (DryadsFlag, [str])]"

@@ -3,7 +3,7 @@ import sys
 import unittest
 from io import StringIO
 
-from dryads import DryadsFlag, utils
+from dryads import utils
 
 
 class StdOutCapture:

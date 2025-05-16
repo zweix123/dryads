@@ -2,20 +2,23 @@
 
 # [1.3.1]
 
-- Bug修复
-    - 对子命令使用help option bug
+- Bug 修复
+  - 对子命令使用 help option bug
 
 # [1.3.0]
 
 - 新增功能
-    - 修改`ds`命令含义，是从当前目录向上递归寻找`dryadsfile`文件
 
-- Bug修复
-    - 对参数检测禁止空格
-    - help option显示help option本身
+  - 修改`ds`命令含义，是从当前目录向上递归寻找`dryadsfile`文件
+
+- Bug 修复
+
+  - 对参数检测禁止空格
+  - help option 显示 help option 本身
 
 - 改进
-    - help option的表现形式
+
+  - help option 的表现形式
 
 - 移除或者废弃的功能
 
@@ -25,8 +28,8 @@
 
 # [1.1.1] - 2024-1-17
 
-第一次提交到PyPI，实验性提交
+第一次提交到 PyPI，实验性提交
 
 - 新增功能：
-    - 建立基本框架，将命令行项目描述为或者要维护的脚本组织为树形结构
-    - 提供若干枚举标记，即`DryadsFlag`
+  - 建立基本框架，将命令行项目描述为或者要维护的脚本组织为树形结构
+  - 提供若干枚举标记，即`DryadsFlag`
