@@ -5,11 +5,11 @@ cmd_tree = {
     "opt": ["pwd"],
 }
 
-Dryads(cmd_tree)
+Dryads(cmd_tree)  # type: ignore
 
 
 """
-> pwd                          
+> pwd                
 /home/dev/dryads/test
 
 > python flag_prefix_cmd.py opt

@@ -2,13 +2,13 @@ import os
 import subprocess
 import sys
 
-from .common import DryadsEnv
+from .common import env
 
 
 def main():
     DRYADSFILE = "dryadsfile"
 
-    dirpath = DryadsEnv.CALLPATH
+    dirpath = env.call_path
 
     while os.sep in dirpath:
         filepath = os.path.join(dirpath, DRYADSFILE)
