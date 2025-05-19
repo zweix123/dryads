@@ -11,7 +11,7 @@ cmd_tree = {
     """,
 }
 
-Dryads(cmd_tree)
+Dryads(cmd_tree)  # type: ignore
 
 
 """

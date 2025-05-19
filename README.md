@@ -144,7 +144,7 @@ Dryads(CMDS)
 
 - 以嵌套的`dict`数据结构描述树形结构
 - `dict`的键只能是`str`或者`tuple[str]`或者`DryadsFlag`（这是什么后面再聊）来描述子命令
-- 叶子节点以`str`/`Callable`/`list[str | Callable]`类型表示具体的要执行的脚本内容。
+- 叶子节点以`str`/`Callable`/`list[str | Callable | DryadsFlag]`类型表示具体的要执行的脚本内容。
 
   - 每个`str`类型字面量作为一个 Shell 脚本一起交给 Shell 执行，即一个字符串可以是多行的，它们是连续的。
 
@@ -160,12 +160,13 @@ Dryads(CMDS)
 
 - 标记`DryadsFlag`，当希望改变某些默认的行为时，以标记的方式实现。其本身是枚举量，作为键或者叶子执行修改某种行为。
 
-  - `DryadsFlag.Anchoring`: 作为叶子的值, 表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./test/flag_anchring.py)
-  - `DryadsFlag.AcceptArg`: 作为叶子的值, 表示该选项还接收一个可选参数, 并将参数放在变量 DryadsArg 中, 例子在[AcceptArg](./test/flag_accept_arg_valid.py), 还有两个非法的例子, [AcceptArg Invalid](./test/flag_accept_arg_invalid_cmd.py) | [AcceptArg Invalid](./test/flag_accept_arg_invalid_func.py)
-  - `DryadsFlag.InVisible`: 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印, 例子在[InVisible](./test/flag_invisiable.py)
-  - `DryadsFlag.IgnoreErr`: 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止, 例子在[IgnoreErr](./test/flag_ignore_err.py)
-  - `DryadsFlag.PrefixCmd`: 作为某个节点的键, 其值对应的脚本为子树中所有脚本的前置脚本, 例子在[PrefixCmd](./test/flag_prefix_cmd.py)
+  - `DryadsFlag.Anchoring`: 作为叶子的值, 表示该叶子中的命令都是以执行脚本的路径开始, 默认从脚本所在的路径开始, 例子在[Anchoring](./examples/flag_anchring.py)
+  - `DryadsFlag.InVisible`: 作为叶子的值, 表示执行的脚本是否打印, 默认打印, 使用该标志表示不打印, 例子在[InVisible](./examples/flag_invisiable.py)
+  - `DryadsFlag.IgnoreErr`: 作为叶子的值, 表示命令执行出错后是否停止, 默认停止, 使用该标志表示不停止, 例子在[IgnoreErr](./examples/flag_ignore_err.py)
+  - `DryadsFlag.PrefixCmd`: 作为某个节点的键, 其值对应的脚本为其所有兄弟节点的子树中所有脚本的前置脚本, 例子在[PrefixCmd](./examples/flag_prefix_cmd.py)
     - 该标记只能用于`dict`不能用于`list`，但往往是对叶子节点`list`中的一系列命令设置前置脚本，可通过再套一层 dict 解决。
+
+- 参数: 将所有的子命令匹配之后的命令行参数, 即视为 dryads 的参数, 可以通过`dryads.argv`获取, 例子在[MultiLineCmd](./examples/accept_arg_func.py)
 
 ## 用户
 

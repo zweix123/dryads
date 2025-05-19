@@ -15,10 +15,10 @@ cmd_tree = {
 }
 
 
-Dryads(cmd_tree)
+Dryads(cmd_tree)  # type: ignore
 
 """
-> python flag_invisiable.py vis-cmd     
+> python flag_invisiable.py vis-cmd
 echo 1
 1
 echo 2

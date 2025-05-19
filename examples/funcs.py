@@ -1,4 +1,4 @@
-from dryads import Dryads, DryadsContainer
+from dryads import Dryads, argv
 
 
 def example_func():
@@ -22,9 +22,8 @@ def complex_func():
 
 
 def input_func():
-    """Output DryadsArg"""
-    assert DryadsContainer.DryadsArg is not None
-    print(DryadsContainer.DryadsArg)
+    """Output dryads argv"""
+    print(argv)
 
 
 cmd_tree = {
@@ -37,10 +36,10 @@ cmd_tree = {
 }
 
 
-Dryads(cmd_tree)
+Dryads(cmd_tree)  # type: ignore
 
 """
-> python example_funcs.py  
+> python funcs.py
 该脚本命令可分为两大类
   Shell Commands, help会输出命令本身
   Python Function, help会输出函数的__doc__
@@ -55,4 +54,7 @@ func complex:      Complex Func
 func input: Output DryadsArg
 env: Print Dryads environment variable.
 -h/--help: Print commands and desciptions supported by script.py.
+
+> python funcs.py func input Hello World
+['Hello', 'World']
 """

@@ -17,7 +17,7 @@ cmd_tree = {
 }
 
 
-Dryads(cmd_tree)
+Dryads(cmd_tree)  # type: ignore
 
 """
 > python flag_ignore_err.py err-interrupt
