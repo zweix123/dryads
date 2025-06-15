@@ -10,8 +10,9 @@ Dryads(cmd_tree)  # type: ignore
 
 """
 > pwd                
-/home/dev/dryads/test
-
+/home/dev/dryads/examples
+"""
+"""
 > python flag_prefix_cmd.py opt
 pwd
 /home/dev

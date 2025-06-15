@@ -1,5 +1,135 @@
+import ast
+import os
+import re
+import subprocess
+
 from dryads import Dryads
 from dryads import __version__ as dryads_version
+
+# ========= side by side diff =========
+
+
+def side_by_side_diff(a_str: str, b_str: str):
+    import difflib
+
+    from rich import print as rprint
+    from rich.columns import Columns
+    from rich.text import Text
+
+    diff = difflib.ndiff(a_str.splitlines(), b_str.splitlines())
+
+    left_lines = []
+    right_lines = []
+
+    for line in diff:
+        if line.startswith("- "):
+            left_lines.append(Text(line[2:], style="red"))
+            right_lines.append(Text(""))
+        elif line.startswith("+ "):
+            left_lines.append(Text(""))
+            right_lines.append(Text(line[2:], style="green"))
+        elif line.startswith("  "):
+            left_lines.append(Text(line[2:]))
+            right_lines.append(Text(line[2:]))
+
+    left_panel = Text("\n").join(left_lines)
+    right_panel = Text("\n").join(right_lines)
+
+    columns = Columns(
+        [left_panel, right_panel],
+        expand=True,
+        equal=True,
+        title="Colored Side-by-Side Diff",
+    )
+
+    rprint(columns)
+
+
+# ========= run example as regression test =========
+
+
+def exampletest():
+    """
+    The multi line string literal at the end of the code
+    represents the execution command and result of the example.
+    Extract the commands and results,
+    execute the commands, and compare the results.
+    """
+
+    EXAMPLES_DIRPATH = os.path.join(os.path.dirname(__file__), "examples")
+
+    def get_cases(file_content: str) -> list[str]:
+        class GlobalStringCollector(ast.NodeVisitor):
+            def __init__(self):
+                self.strings = []
+                self.in_function = False
+
+            def visit_FunctionDef(self, node):
+                old_in_function = self.in_function
+                self.in_function = True
+                self.generic_visit(node)
+                self.in_function = old_in_function
+
+            def visit_Expr(self, node):
+                if (
+                    not self.in_function
+                    and isinstance(node.value, ast.Constant)
+                    and isinstance(node.value.value, str)
+                ):
+                    self.strings.append(node.value.value)
+
+        tree = ast.parse(file_content)
+        collector = GlobalStringCollector()
+        collector.visit(tree)
+
+        return [s.strip() for s in collector.strings]
+
+    def parse_case(case: str) -> tuple[str, str]:  # (cmd, output)
+        cmd, output = case.split("\n", maxsplit=1)
+        assert cmd.startswith(">"), cmd
+        cmd = cmd[1:]
+        return cmd.strip(), output.strip()
+
+    def run_case(cmd: str) -> str:  # output
+        cmd = f"cd {EXAMPLES_DIRPATH} && {cmd}"
+
+        process = subprocess.Popen(
+            cmd,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            universal_newlines=True,
+        )
+        output = process.communicate()[0]
+
+        # Strip ANSI escape codes from a string by using regex
+        return re.sub(r"\x1b\[\d{1,2}(;\d{1,2})?m", "", output.strip())
+
+    MOCK_DATA = [
+        ("/home/dev/dryads", os.path.dirname(__file__)),  # project root
+        ("/home/dev", os.path.expanduser("~")),  # user home
+    ]
+
+    for example_file in [
+        os.path.join(EXAMPLES_DIRPATH, file) for file in os.listdir(EXAMPLES_DIRPATH)
+    ]:
+        print(f"run example: {example_file}")
+
+        with open(example_file, "r", encoding="utf-8") as f:
+            file_content = f.read()
+        cases = get_cases(file_content)
+        for case in cases:
+            cmd, expected_output = parse_case(case)
+            for fake, real in MOCK_DATA:
+                expected_output = expected_output.replace(fake, real)
+            actual_output = run_case(cmd).strip()
+
+            if actual_output != expected_output:
+                side_by_side_diff(expected_output, actual_output)
+                print("Failed")
+                exit(1)
+
 
 cmds = {
     "reload": [
@@ -7,11 +137,12 @@ cmds = {
         f"python -m pip install ./dist/dryads-{dryads_version}-py3-none-any.whl --force-reinstall",
     ],
     "test": {
-        "regression": [
+        "unittest": [
             "python ./tests/test_checker.py",
             "python ./tests/test_helper.py",
             "python ./tests/test_dryads.py",
-        ]
+        ],
+        "example": exampletest,
     },
 }
 

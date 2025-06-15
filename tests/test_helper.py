@@ -83,7 +83,7 @@ pwd""",
             with StdOutCapture() as soc:
                 _help_cmd_func(test_case[1], [])
             output = soc.get()
-            print(f"{test_case[0]}: \n", f'"""{output}"""', sep="")
+            # print(f"{test_case[0]}: \n", f'"""{output}"""', sep="")
             self.assertEqual(test_case[2], remove_text_color(output))
 
 

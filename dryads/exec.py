@@ -19,6 +19,7 @@ def main():
 
     if os.sep not in dirpath:
         print(f"Can't find dryadsfile.")
+        sys.stdout.flush()
         exit(-1)
 
     filepath = os.path.join(dirpath, DRYADSFILE)

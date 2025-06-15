@@ -14,16 +14,19 @@ Dryads(cmd_tree)  # type: ignore
 > python flag_anchring.py pwd for-script
 pwd
 /home/dev/dryads/examples
-
+"""
+"""
 > python flag_anchring.py pwd cur
 pwd
 /home/dev/dryads/examples
-
-> python examples/flag_anchring.py pwd for-script
+"""
+"""
+> cd .. && python examples/flag_anchring.py pwd for-script
 pwd
 /home/dev/dryads/examples
-
-> python examples/flag_anchring.py pwd cur
+"""
+"""
+> cd .. && python examples/flag_anchring.py pwd cur
 pwd
 /home/dev/dryads
 """

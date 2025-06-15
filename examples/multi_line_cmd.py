@@ -6,8 +6,8 @@ cmd_tree = {
         "pwd",
     ],
     "multi": """
-    cd ~
-    pwd
+        cd ~
+        pwd
     """,
 }
 
@@ -15,7 +15,7 @@ Dryads(cmd_tree)  # type: ignore
 
 
 """
-> python example_multi_line_cmd.py 
+> python multi_line_cmd.py 
 该脚本命令可分为两大类
   Shell Commands, help会输出命令本身
   Python Function, help会输出函数的__doc__
@@ -25,16 +25,18 @@ multi: cd ~
        pwd
 env: Print Dryads environment variable.
 -h/--help: Print commands and desciptions supported by script.py.
-
-> python example_multi_line_cmd.py single
+"""
+"""
+> python multi_line_cmd.py single
 cd ~
 pwd
-/home/dev/dryads/test
+/home/dev/dryads/examples
+"""
+"""
+> python multi_line_cmd.py multi
 
-> python example_multi_line_cmd.py multi 
-
-    cd ~
-    pwd
+        cd ~
+        pwd
     
-/home/dev
+/Users/didi
 """
