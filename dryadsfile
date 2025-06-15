@@ -85,6 +85,9 @@ def exampletest():
         return [s.strip() for s in collector.strings]
 
     def parse_case(case: str) -> tuple[str, str]:  # (cmd, output)
+        if "\n" not in case:  # not output case
+            assert case.startswith(">"), case
+            return case[1:], ""
         cmd, output = case.split("\n", maxsplit=1)
         assert cmd.startswith(">"), cmd
         cmd = cmd[1:]
@@ -129,6 +132,7 @@ def exampletest():
                 side_by_side_diff(expected_output, actual_output)
                 print("Failed")
                 exit(1)
+        print("Passed")
 
 
 cmds = {

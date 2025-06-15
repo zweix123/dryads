@@ -28,22 +28,22 @@ def remove_text_color(text: str) -> str:
 
 class TestHelp(unittest.TestCase):
     def test_TDT(self):
-        test_cases: list[tuple[str, dict, str]] = [
-            (
-                "default",
-                {},
-                "",
-            ),
-            (
-                "common",
-                {
+        test_cases: list[dict] = [
+            {
+                "name": "empty",
+                "args": {},
+                "want": "",
+            },
+            {
+                "name": "common",
+                "args": {
                     "a": "b",
                 },
-                "a: b\n",
-            ),
-            (
-                "",
-                {
+                "want": "a: b\n",
+            },
+            {
+                "name": "typical",
+                "args": {
                     "single": [
                         "cd ~",
                         "pwd",
@@ -54,11 +54,11 @@ pwd""",
                     "indentation": """cd ~
 pwd""",
                 },
-                "single: cd ~\n        pwd\nmulti: cd ~\n       pwd\nindentation: cd ~\n             pwd\n",
-            ),
-            (
-                "中文",
-                {
+                "want": "single: cd ~\n        pwd\nmulti: cd ~\n       pwd\nindentation: cd ~\n             pwd\n",
+            },
+            {
+                "name": "中文",
+                "args": {
                     "123": {
                         "123": "123",
                         "中文": "中文",
@@ -75,16 +75,18 @@ pwd""",
                         "English": "English",
                     },
                 },
-                "123 123: 123\n123 中文: 中文\n123 English: English\n中文 123: 123\n中文 中文: 中文\n中文 English: English\nEnglish 123: 123\nEnglish 中文: 中文\nEnglish English: English\n",
-            ),
+                "want": "123 123: 123\n123 中文: 中文\n123 English: English\n中文 123: 123\n中文 中文: 中文\n中文 English: English\nEnglish 123: 123\nEnglish 中文: 中文\nEnglish English: English\n",
+            },
         ]
 
         for test_case in test_cases:
-            with StdOutCapture() as soc:
-                _help_cmd_func(test_case[1], [])
-            output = soc.get()
-            # print(f"{test_case[0]}: \n", f'"""{output}"""', sep="")
-            self.assertEqual(test_case[2], remove_text_color(output))
+            with self.subTest(test_case["name"]):
+                with StdOutCapture() as soc:
+                    _help_cmd_func(test_case["args"], [])
+                output = soc.get()
+                print(output)
+                print(test_case["want"])
+                self.assertEqual(test_case["want"], remove_text_color(output))
 
 
 if __name__ == "__main__":

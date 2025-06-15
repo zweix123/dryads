@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dryads"
-version = "2.0.1"
+version = "2.0.2"
 description = "Simple CLI building tool and script management tool."
 authors = ["zweix123 <1979803044@qq.com>"]
 readme = "README.md"
