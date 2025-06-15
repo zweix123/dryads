@@ -2,7 +2,7 @@ from .common import DryadsFlag, argv, env
 from .dryads import Dryads
 from .shell import run_shell_cmd
 
-__version__ = "2.0.1"
+__version__ = "2.0.2"
 __all__ = ["DryadsFlag", "env", "argv", "Dryads", "run_shell_cmd"]
 
 """

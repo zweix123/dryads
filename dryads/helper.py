@@ -149,10 +149,17 @@ def _help_cmd_func(cmd_node: DryadsCmdTreeNodeType, pre_sub_cmd: List[str]) -> N
         cmd_node (DryadsCmdTree): dfs node
         pre_sub_cmd (List[str]): dfs pre path
     """
-    if not isinstance(cmd_node, dict):  # leaf node, print doc
+    # leaf node -> print doc
+    if not isinstance(cmd_node, dict) or (  # normal leaf node
+        len(pre_sub_cmd) > 0  # not root node
+        and (isinstance(cmd_node, dict) and len(cmd_node) == 0)  # empty internal node
+    ):
         align_len = _sub_cmds_print(pre_sub_cmd)
         print(": ", end="")
-        _doc_print(_leaf_to_doc(cmd_node), align_len + 2)
+        if not isinstance(cmd_node, dict):
+            _doc_print(_leaf_to_doc(cmd_node), align_len + 2)
+        else:
+            _doc_print(["{}"], align_len + 2)
         print()
         sys.stdout.flush()
         return
