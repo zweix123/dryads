@@ -25,7 +25,8 @@ echo 2
 2
 echo 3
 3
-
+"""
+"""
 > python flag_invisiable.py invis-cmd
 1
 2

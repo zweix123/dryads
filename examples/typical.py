@@ -62,7 +62,8 @@ create rust: DryadsFlag.Anchoring
 -ds/--dryads: echo Hello Dryads
 env: Print Dryads environment variable.
 -h/--help: Print commands and desciptions supported by script.py.
-
+"""
+"""
 > python typical.py echo --help
 该脚本命令可分为两大类
   Shell Commands, help会输出命令本身

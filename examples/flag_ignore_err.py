@@ -24,8 +24,9 @@ Dryads(cmd_tree)  # type: ignore
 error-command
 bash: line 2: error-command: command not found
 Fail
-
-> python flag_ignore_err.py err-continue 
+"""
+"""
+> python flag_ignore_err.py err-continue
 error-command
 bash: line 1: error-command: command not found
 error-command

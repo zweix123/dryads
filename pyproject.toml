@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dryads"
-version = "2.0.0"
+version = "2.0.1"
 description = "Simple CLI building tool and script management tool."
 authors = ["zweix123 <1979803044@qq.com>"]
 readme = "README.md"
@@ -10,6 +10,9 @@ python = "^3.8"
 
 [tool.poetry.scripts]
 ds = "dryads.exec:main"
+
+[tool.poetry.group.dev.dependencies]
+rich = "^14.0.0"
 
 [build-system]
 requires = ["poetry-core"]

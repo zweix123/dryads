@@ -1,5 +1,6 @@
 # generate help function for cmd tree dict
 
+import sys
 import textwrap
 from typing import Callable, List
 
@@ -136,6 +137,7 @@ def _doc_print(doc: List[str], align_len: int) -> None:
         print(line, end="")
         if idx != len(doc) - 1:  # 不是最后一个
             print()
+            sys.stdout.flush()
 
 
 def _help_cmd_func(cmd_node: DryadsCmdTreeNodeType, pre_sub_cmd: List[str]) -> None:
@@ -152,6 +154,7 @@ def _help_cmd_func(cmd_node: DryadsCmdTreeNodeType, pre_sub_cmd: List[str]) -> N
         print(": ", end="")
         _doc_print(_leaf_to_doc(cmd_node), align_len + 2)
         print()
+        sys.stdout.flush()
         return
 
     assert isinstance(cmd_node, dict)  # Defensive programming
@@ -167,6 +170,7 @@ def gen_help_cmd_func(cmd_tree: DryadsCmdTreeNodeType) -> Callable:
         print("该脚本命令可分为两大类")
         print("  Shell Commands, help会输出命令本身")
         print("  Python Function, help会输出函数的__doc__")
+        sys.stdout.flush()
 
         _help_cmd_func(cmd_tree, [])
 

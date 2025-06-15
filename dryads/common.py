@@ -1,4 +1,5 @@
 import os
+import sys
 from enum import Enum, auto
 from typing import Callable, Dict, List, Tuple, TypeAlias, Union
 
@@ -89,6 +90,7 @@ class DryadsEnv:
         """Print Dryads environment variable."""
         print(f"script path is {self.script_path}")
         print(f"call path is {self.call_path}")
+        sys.stdout.flush()
 
 
 env = DryadsEnv()

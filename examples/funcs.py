@@ -17,7 +17,8 @@ def complex_func():
        args   ||  none
      ability  ||  print
 
-    不需要参数, 功能仅打印。"""
+    不需要参数, 功能仅打印。
+    """
     print("Call complex_func")
 
 
@@ -43,18 +44,19 @@ Dryads(cmd_tree)  # type: ignore
 该脚本命令可分为两大类
   Shell Commands, help会输出命令本身
   Python Function, help会输出函数的__doc__
-func example: None
+func example: example_func
 func simple: This is a simple function.
 func complex:      Complex Func
               ========================
                  args   ||  none
                ability  ||  print
-              
+
               不需要参数, 功能仅打印。
-func input: Output DryadsArg
+func input: Output dryads argv
 env: Print Dryads environment variable.
 -h/--help: Print commands and desciptions supported by script.py.
-
+"""
+"""
 > python funcs.py func input Hello World
 ['Hello', 'World']
 """

@@ -36,6 +36,7 @@ def dryads_run_shell_cmd(cmd: str) -> None:
 
     if not flag_stack.contains(DryadsFlag.InVisible):
         print("\033[33;1m" + cmd + "\033[0m")
+        sys.stdout.flush()
 
     if not flag_stack.contains(DryadsFlag.IgnoreErr):
         pre_cmds = [shell_err_stop_cmd] + pre_cmds
@@ -48,6 +49,7 @@ def dryads_run_shell_cmd(cmd: str) -> None:
         if not flag_stack.contains(DryadsFlag.IgnoreErr):
             if not flag_stack.contains(DryadsFlag.InVisible):
                 print("\033[41m\033[37m" + "Fail" + "\033[0m")
+                sys.stdout.flush()
             exit(-1)
     except Exception as e:
         assert False, e
